@@ -1,0 +1,18 @@
+battle
+  -character
+    ~info
+  -weapon
+    ~info
+  -enemy
+    -ai
+  =clock
+    =attack
+      ~dodge (attagi vs defagi)
+      ~calc dam (wep+str)-(def+dam)
+      ~multipliers (element,crit)
+    =run
+      ~success?end:skip go
+    =item
+      ~individually manage
+    =rest
+      ~regen hp & sp
