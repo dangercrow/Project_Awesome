@@ -14,6 +14,7 @@ class Character:
         self.status=status
         self.data=data
 
+###Remove on later builds###
 def info(character):
     print character.name, 'info:'
     print 'Level:', character.level[0]
@@ -26,7 +27,7 @@ def info(character):
     print 'Agility:',character.agility
     print 'Status:',character.status
     print 'Extra Data:',character.data
-
+###End remove###
 blankplayer=Character()
 hitler=Character('Adolf Hitler',[99,162,1239],[413,1337,0],['Gas chambers:',3,10,1],15,10,13,20,"None",['Has a tendency to kill everyone with Nazi powers','Only has one testicle'])
 
