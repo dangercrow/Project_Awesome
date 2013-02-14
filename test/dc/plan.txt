@@ -9,7 +9,7 @@ battle
       ~calc dam (wep+str)-(def+dam)
       ~multipliers (element,crit)
     =run
-      ~success?end:skip go
+      ~success?end:skip go (agi(lvl) vs agi(lvl))
     =item
       ~individually manage
     =rest
