@@ -5,96 +5,140 @@ from pygame.locals import *
 pygame.init()
 
 
-class Background(pygame.sprite.Sprite):          #Sprite for moving backgrounds
-    def __init__(self, image, (x, y), WIDTH, HEIGHT, MOVESPEED):
-        pygame.sprite.Sprite.__init__(self)
+class Background(pygame.sprite.DirtySprite):          #Sprite for things that move in the background
+    def __init__(self, image, (x, y), colorkey, MOVESPEED):
+        pygame.sprite.DirtySprite.__init__(self)
         self.image = pygame.image.load(image)
-        self.Mapx = x
-        self.Mapy = y
-        self.WIDTH = WIDTH
-        self.HEIGHT = HEIGHT
-        self.rect = (self.Mapx, self.Mapy, self.WIDTH, self.HEIGHT, 603)
-        self.MOVESPEED = MOVESPEED
-
-    def move(self, movedir):
-        if movedir == 2:
-            self.Mapx -= self.MOVESPEED
-        elif movedir == 4:
-            self.Mapx += self.MOVESPEED
-        elif (movedir == 1):
-            self.Mapy += self.MOVESPEED
-        elif (movedir == 3):
-            self.Mapy -= self.MOVESPEED
-
-    def update(self, surface):
-        surface.blit(self.image, (self.Mapx, self.Mapy))
-
-
-class Character(pygame.sprite.Sprite):
-    def __init__(self, image, (x, y), Colorkey):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image)
-        self.Colorkey = Colorkey
         self.x = x
         self.y = y
-        self.image.set_colorkey(self.Colorkey)
-        self.rect = self.image.get_rect(topleft = (self.x, self.y))
-    def update(self, surface):
-        surface.blit(self.image, (self.x, self.y))
-
-
-class NPC(pygame.sprite.Sprite):
-    def __init__(self, image, (x, y), colorkey,  MOVESPEED):
-        pygame.sprite.Sprite.__init__(self)
-        self.NPCx = x
-        self.NPCy = y
-        self.topleft = (self.NPCx, self.NPCy)
+        self.colorkey = colorkey
         self.MOVESPEED = MOVESPEED
+        self.image.set_colorkey(self.colorkey)
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def move(self, movedir):
+        if movedir == 'moveRight':
+            self.x -= self.MOVESPEED
+        elif movedir == 'moveLeft':
+            self.x += self.MOVESPEED
+        elif movedir == 'moveUp':
+            self.y += self.MOVESPEED
+        elif movedir == 'moveDown':
+            self.y -= self.MOVESPEED
+        pos = (self.x, self.y)
+        self.rect.topleft = pos
+
+    def update(self):
+        self.dirty = 1
+
+
+class Character(pygame.sprite.DirtySprite):
+    def __init__(self, image, (x, y), colorkey):
+        pygame.sprite.DirtySprite.__init__(self)
         self.image = pygame.image.load(image)
         self.colorkey = colorkey
+        self.x = x
+        self.y = y
         self.image.set_colorkey(self.colorkey)
-        self.rect = self.image.get_rect(topleft = (self.topleft))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def update(self):
+        self.dirty = 1
+
+
+class House(pygame.sprite.DirtySprite):
+    def __init__(self, image, (x, y), colorkey, adjustment, Door, MOVESPEED): #Door must be in rect format
+        pygame.sprite.DirtySprite.__init__(self)
+        self.image = pygame.image.load(image)
+        self.x = x
+        self.y = y
+        self.adjustment = adjustment
+        self.colorkey = colorkey
+        self.Door = pygame.Rect(Door)
+        self.MOVESPEED = MOVESPEED
+        self.image.set_colorkey(self.colorkey)
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
     def move(self, movedir):
-        if movedir == 2:
-            self.NPCx -= self.MOVESPEED
-        elif movedir == 4:
-            self.NPCx += self.MOVESPEED
-        elif movedir == 1:
-            self.NPCy += self.MOVESPEED
-        elif movedir == 3:
-            self.NPCy -= self.MOVESPEED
-    def update(self, surface):
-        surface.blit(self.image, (self.NPCx, self.NPCy))
+        if movedir == 'moveRight':
+            self.x -= self.MOVESPEED
+        elif movedir == 'moveLeft':
+            self.x += self.MOVESPEED
+        elif movedir == 'moveUp':
+            self.y += self.MOVESPEED
+        elif movedir == 'moveDown':
+            self.y -= self.MOVESPEED
+        pos = (self.x, self.y)
+        self.Door.topleft = (self.x + self.adjustment[0], self.y+self.adjustment[1])
+        self.rect.topleft = pos
+        self.dirty = 1
+
+    def update(self):
+        self.dirty = 1
 
 
-class AnimatedSprite(pygame.sprite.Sprite):
+class AnimatedSprite(pygame.sprite.DirtySprite):
     def __init__(self, images, fps=0.3):
         pygame.sprite.Sprite.__init__(self)
-        self._images = images
-        self._start = pygame.time.get_ticks()
-        self._delay = 1000 / fps
-        self._last_update = 0
-        self._frame = 0
+        self.images = images
+        self.start = pygame.time.get_ticks()
+        self.delay = 1000 / fps
+        self.last_update = 0
+        self.frame = 0
         self.update(pygame.time.get_ticks())
 
     def update(self, t):
-        if t - self._last_update > self._delay:
-            self._frame += 1
-            if self._frame >= len(self._images):
-                self._frame = 0
-            self.image = self._images[self._frame]
-            self._last_update = t
+        if t - self.last_update > self.delay:
+            self.frame += 1
+            if self.frame >= len(self.images):
+                self.frame = 0
+            self.image = self.images[self.frame]
+            self.last_update = t
 
 
-class Pointer(pygame.sprite.Sprite):
-    def __init__(self, image, Colorkey):
-        pygame.sprite.Sprite.__init__(self)
+class Pointer(pygame.sprite.DirtySprite):
+    def __init__(self, image, colorkey):
+        pygame.sprite.DirtySprite.__init__(self)
         self.image = pygame.image.load(image)
-        self.Colorkey = Colorkey
-        self.image.set_colorkey(self.Colorkey)
-        self.rect = self.image.get_rect()
+        self.colorkey = colorkey
+        self.image.set_colorkey(self.colorkey)
+        self.rect = self.image.get_rect(topleft=(pygame.mouse.get_pos()))
+        self.dirty = 1
 
-    def update(self, surface):
+    def update(self):
         pos = pygame.mouse.get_pos()
-        surface.blit(self.image, pos)
+        self.rect.topleft = pos
+        self.dirty = 1
 
+    def Clicking(self):
+        if pygame.event.get()[MOUSEBUTTONDOWN]: self.Clicking = True
+        if pygame.event.get()[MOUSEBUTTONUP]: self.Clicking = False
+
+
+class Menu(pygame.sprite.DirtySprite):
+    def __init__(self, image, (x, y), MOVESPEED, selectorimage):
+        pygame.sprite.DirtySprite.__init__(self)
+        self.image = pygame.image.load(image)
+        self.x = x
+        self.y = y
+        self.MOVESPEED = MOVESPEED
+        self.selectorimage = pygame.image.load(selectorimage)
+        self.selectorrect = self.selectorimage.get_rect()
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def move(self, movedir, surface):
+        if movedir == 'moveUp':
+            self.y += self.MOVESPEED
+        elif movedir == 'moveRight':
+            self.x -= self.MOVESPEED
+        elif movedir == 'moveDown':
+            self.y -= self.MOVESPEED
+        elif movedir == 'moveLeft':
+            self.x += self.MOVESPEED
+
+        pos = (self.x, self.y)
+        self.selectorrect.topleft = pos
+        surface.blit(self.selectorimage, pos)
+        self.dirty = 1
+    def update(self):
+        self.dirty = 1

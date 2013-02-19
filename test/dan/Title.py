@@ -1,5 +1,6 @@
 import sys
 import pygame
+from FunctLib import*
 from Spritestash import *
 from pygame.locals import *
 
@@ -10,15 +11,18 @@ Titledisplay = pygame.display.set_mode(ScreenWH)
 BLACK, WHITE = (0, 0, 0), (250, 250, 250)
 Titledisplay.fill(BLACK)
 #Images
-Selector = pygame.image.load('C:\Users\Dan\PycharmProjects\Prototype\Images\Selector.png')
-Titlescreen = pygame.image.load('C:\Users\Dan\PycharmProjects\Prototype\Images\Titlescreen.png')
-Cursor = Pointer('C:\Users\Dan\PycharmProjects\Prototype\Images\mouse.png', WHITE)
+Selector = pygame.image.load('Selector.png')
+Selector.set_colorkey(WHITE)
+Titlescreen = pygame.image.load('Titlescreen.png')
+Cursor = Pointer('Cursor.png', WHITE)
+
 #Music
-Music = pygame.mixer.music.load('C:\Users\Dan\PycharmProjects\Prototype\Music\Music.mp3')
+Music = pygame.mixer.music.load('Music.mp3')
 pygame.mixer.music.play(-1, 0)
 #Variables
 Click = False
 pygame.mouse.set_visible(False)
+Objects = pygame.sprite.LayeredDirty(Cursor)
 
 while 1:
     Cursorpos = pygame.mouse.get_pos()
@@ -36,16 +40,17 @@ while 1:
                 sys.exit()
 
     Titledisplay.blit(Titlescreen, (-50, -50))
-    if 330 < Cursorpos[0] < 518 and 450 < Cursorpos[1] < 500:
+    if 300 < Cursorpos[0] < 480 and 400 < Cursorpos[1] < 450:
         Titledisplay.blit(Selector, (330, 450))
         if Click > 0:
-            execfile('C:\Users\Dan\PycharmProjects\Prototype\Python files\Movement.py')
-    if 330 < Cursorpos[0] < 518 and 500 < Cursorpos[1] < 600:
+            execfile('Movement.py')
+    if 300 < Cursorpos[0] < 480 and 450 < Cursorpos[1] < 500:
         Titledisplay.blit(Selector, (330, 500))
         if Click > 0:
             pygame.quit()
             sys.exit()
-
-    Cursor.update(Titledisplay)
+    Cursor.update()
+    Obj = pygame.sprite.LayeredDirty(Cursor)
+    Obj.draw(Titledisplay)
     pygame.display.update()
 
