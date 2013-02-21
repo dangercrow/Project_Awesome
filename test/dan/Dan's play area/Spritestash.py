@@ -1,5 +1,4 @@
 import pygame
-import sys
 from pygame.locals import *
 
 pygame.init()
@@ -47,11 +46,12 @@ class Character(pygame.sprite.DirtySprite):
 
 
 class House(pygame.sprite.DirtySprite):
-    def __init__(self, image, (x, y), colorkey, adjustment, Door, MOVESPEED): #Door must be in rect format
+    def __init__(self, image, (x, y), colorkey, adjustment, Door, MOVESPEED, Player): #Door must be in rect format
         pygame.sprite.DirtySprite.__init__(self)
         self.image = pygame.image.load(image)
         self.x = x
         self.y = y
+        self.Player = Player
         self.adjustment = adjustment
         self.colorkey = colorkey
         self.Door = pygame.Rect(Door)
@@ -74,13 +74,18 @@ class House(pygame.sprite.DirtySprite):
         self.dirty = 1
 
     def update(self):
+        if self.Door.colliderect(self.Player.rect):
+            self.Collision = True
         self.dirty = 1
 
 
 class AnimatedSprite(pygame.sprite.DirtySprite):
-    def __init__(self, images, fps=0.3):
+    def __init__(self, moveLeftimages, moveRightimages, moveUpimages, moveDownimages, fps=0.3):
         pygame.sprite.Sprite.__init__(self)
-        self.images = images
+        self.moveLeftimages = moveLeftimages
+        self.moveRightimages = moveRightimages
+        self.moveUpimages = moveUpimages
+        self.moveDownimages = moveDownimages
         self.start = pygame.time.get_ticks()
         self.delay = 1000 / fps
         self.last_update = 0
@@ -135,10 +140,50 @@ class Menu(pygame.sprite.DirtySprite):
             self.y -= self.MOVESPEED
         elif movedir == 'moveLeft':
             self.x += self.MOVESPEED
-
+        self.dirty = 1
         pos = (self.x, self.y)
         self.selectorrect.topleft = pos
         surface.blit(self.selectorimage, pos)
-        self.dirty = 1
     def update(self):
+        self.dirty = 1
+
+class NPC(pygame.sprite.DirtySprite):          #Sprite for things that move in the background
+    def __init__(self, image, (x, y), colorkey, MOVESPEED, Player, Dialogue):
+        pygame.sprite.DirtySprite.__init__(self)
+        self.image = pygame.image.load(image)
+        self.x = x
+        self.y = y
+        self.Collision = False
+        self.Talk = False
+        self.Dialogue = Dialogue
+        self.Player = Player
+        self.colorkey = colorkey
+        self.MOVESPEED = MOVESPEED
+        self.image.set_colorkey(self.colorkey)
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def move(self, movedir):
+        if movedir == 'moveRight':
+            self.x -= self.MOVESPEED
+        elif movedir == 'moveLeft':
+            self.x += self.MOVESPEED
+        elif movedir == 'moveUp':
+            self.y += self.MOVESPEED
+        elif movedir == 'moveDown':
+            self.y -= self.MOVESPEED
+        pos = (self.x, self.y)
+        self.rect.topleft = pos
+
+    def update(self):
+        if self.rect.colliderect(self.Player.rect):
+            self.Collision = True
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_RETURN:
+                        self.Talk = True
+        else:
+            self.Collision = False
+        if self.Talk:
+            print self.Dialogue
+            self.Talk = False
         self.dirty = 1

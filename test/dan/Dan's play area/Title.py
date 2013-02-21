@@ -2,7 +2,6 @@ import sys
 import pygame
 from FunctLib import*
 from Spritestash import *
-from pygame.locals import *
 
 pygame.init()
 
