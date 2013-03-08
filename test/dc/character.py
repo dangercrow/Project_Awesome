@@ -13,6 +13,6 @@ class Character:
         self.agility=agility
         self.status=status
         self.equip=equip
-        self.data=data        
+        self.data=data
 
 blankplayer=Character()

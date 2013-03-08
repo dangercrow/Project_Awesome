@@ -1,16 +1,17 @@
 battle
-  -character #
-  -weapon    #
-  -enemy     #
-    -ai      
-  =clock     #
-    =attack  
-      ~dodge (attagi vs defagi)
-      ~calc dam (wep+str)-(def+dam)
-      ~multipliers (element,crit)
-    =run
-      ~success?end:skip go (agi(lvl) vs agi(lvl))
-    =item
-      ~individually manage
-    =rest
-      ~regen hp & sp
+#W  -character 
+#F  -weapon    
+#F  -enemy     
+#T  -ai
+
+#F  =clock     
+#F  =attack  
+#     ~dodge (attagi vs defagi)
+#     ~calc dam (wep+str)-(def+dam)
+#     ~multipliers (element,crit)
+#D   =run
+#D      ~success?end:skip go (agi(lvl) vs agi(lvl))
+#F   =item
+#     ~individually manage
+#F   =rest
+#     ~regen hp & sp

@@ -2,6 +2,7 @@ import character
 import enemy
 import weapon
 import random
+import ai
 
 clockcount=1
 class Battle:
@@ -29,34 +30,37 @@ class Battle:
         for i in range(0,4):
             if type(self.enemies[i])==type([]):
                 self.enemycount+=1
-        self.max_agi=0 # Filled in startBattle()
-        self.agi_check=[[0.0]*(self.playercount),[0.0]*(self.enemycount)]
+#D        self.max_agi=0 # Filled in startBattle()
+#D        self.agi_check=[[0.0]*(self.playercount),[0.0]*(self.enemycount)]
 
-    def clock(self):
-        global clockcount
-        print 'Clock',clockcount
-        clockcount+=1
-        if clockcount>10:
-            self.result=int(random.randint(1,2)) #Break out after 10 rounds for convenience
-            return self.result
-        if self.player1[0].HP[0]<1:
-            self.result=2 # Failure
-            return self.result
-        elif self.enemy1[0].HP[0]<1:
-            self.result=1 # Success
-            return self.result
-        elif max(self.agi_check[0])>float(self.max_agi):
-            return 3 #Player input time!
-        return 0 #In progress
+#D    def clock(self):
+#D        global clockcount
+#D        print 'Clock',clockcount
+#D        clockcount+=1
+#D        if clockcount>10:
+#D            self.result=int(random.randint(1,2)) #Break out after 10 rounds for convenience
+#D            return self.result
+#D        if self.player1[0].HP[0]<1:
+#D            self.result=2 # Failure
+#D            return self.result
+#D        elif self.enemy1[0].HP[0]<1:
+#D            self.result=1 # Success
+#D            return self.result
+#D        elif max(self.agi_check[0])>float(self.max_agi):
+#D            return 3 #Player input time!
+#D        return 0 #In progress
         
 
     def item(self,player,item):
         print player,'used item:',item
 
-    def run(self,player):
-        agi=player.agility
-        return (random.randint(0,100)<agi+5)
-    
+#
+#   Deprecated
+#
+#    def run(self,player):
+#        agi=player.agility
+#        return (random.randint(0,100)<agi+5)
+#
     def rest(self,player):
         player.HP[0]+=3
         if player.HP[0]>player.HP[1]:player.HP[0]=player.HP[1]
